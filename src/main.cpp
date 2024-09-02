@@ -10,16 +10,15 @@ int main(int argc, char **argv) {
   InitWindow(init_window_width, init_window_height, "Raylib WASM Example");
   SetWindowState(FLAG_WINDOW_RESIZABLE);
 
-  MovablePoint mp{Vector2{10.0f, 5.0f}};
+  MovablePoint mp{Vector2{10.0f, 5.0f}, 10.0f, GREEN};
   
   while (!WindowShouldClose()) {
     float dt = GetFrameTime();
-    mp.update(dt, GetScreenWidth(), GetScreenHeight());
+    mp.update(dt);
 
     BeginDrawing();
       ClearBackground(BLACK);
       mp.render();
-      DrawFPS(10, 10);
     EndDrawing();
   }
   

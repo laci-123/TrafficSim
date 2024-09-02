@@ -3,16 +3,19 @@
 
 #include "raylib.h"
 #include "raymath.h"
+#include <optional>
 
 
 class MovablePoint {
 public:
-  MovablePoint(Vector2 position);
-  void update(float dt, int window_width, int window_height);
+  MovablePoint(Vector2 position, float radius, Color color);
+  void update(float dt);
   void render() const;
 private:
   Vector2 position;
-  Vector2 velocity;
+  float radius;
+  Color color;
+  std::optional<Vector2> mouse_offset;
 };
 
 #endif // MOVABLE_POINT_H_
