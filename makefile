@@ -6,14 +6,28 @@ LINKFLAGS = -s USE_GLFW=3 -s ASYNCIFY
 INCLUDE	  = -I./raylib/src
 LIBS	  = ./raylib/src/libraylib.a
 
-index.js: obj/main.o obj/movable_point.o raylib/src/libraylib.a
-	$(CXX) $(LINKFLAGS) $(LIBS) obj/main.o obj/movable_point.o -o index.js
+all: build/index.js build/index.html
+
+clean:
+	rm -rf obj
+	rm -rf build
+
+.PHONY: all clean
+
+build/index.js: obj/main.o obj/movable_point.o raylib/src/libraylib.a | build
+	$(CXX) $(LINKFLAGS) $(LIBS) obj/main.o obj/movable_point.o -o build/index.js
+
+build/index.html: src/index.html | build
+	cp $< $@
 
 raylib/src/libraylib.a:
 	cd raylib/src && make PLATFORM=PLATFORM_WEB
 
 obj:
 	mkdir obj
+
+build:
+	mkdir build
 
 obj/main.o: src/main.cpp src/movable_point.hpp | obj
 	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
