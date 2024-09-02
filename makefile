@@ -4,7 +4,6 @@ CXX       = em++
 CFLAGS    = -Wall -std=c++20 -c
 LINKFLAGS = -s USE_GLFW=3 -s ASYNCIFY
 INCLUDE	  = -I./raylib/src
-LIBS	  = ./raylib/src/libraylib.a
 
 all: build/index.js build/index.html
 
@@ -14,8 +13,9 @@ clean:
 
 .PHONY: all clean
 
-build/index.js: obj/main.o obj/bezier_curve.o raylib/src/libraylib.a | build
-	$(CXX) $(LINKFLAGS) $(LIBS) obj/main.o obj/movable_point.o obj/bezier_curve.o -o build/index.js
+#		cannot use a wildcard here because these files potentially do not exist yet
+build/index.js: obj/main.o obj/bezier_curve.o obj/movable_point.o raylib/src/libraylib.a | build
+	$(CXX) $(LINKFLAGS) $^ -o build/index.js
 
 build/index.html: src/index.html | build
 	cp $< $@
