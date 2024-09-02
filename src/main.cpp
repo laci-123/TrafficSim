@@ -10,15 +10,24 @@ int main(int argc, char **argv) {
   InitWindow(init_window_width, init_window_height, "Raylib WASM Example");
   SetWindowState(FLAG_WINDOW_RESIZABLE);
 
-  MovablePoint mp{Vector2{10.0f, 5.0f}, 10.0f, GREEN};
+  MovablePoint mp1{Vector2{10.0f, 5.0f}, 10.0f, GREEN};
+  MovablePoint mp2{Vector2{100.0f, 10.0f}, 10.0f, BLUE};
+  MovablePoint mp3{Vector2{30.0f, 50.0f}, 10.0f, BLUE};
+
+  mp1.attach(mp2);
+  mp1.attach(mp3);
   
   while (!WindowShouldClose()) {
     float dt = GetFrameTime();
-    mp.update(dt);
+    mp1.update(dt);
+    mp2.update(dt);
+    mp3.update(dt);
 
     BeginDrawing();
       ClearBackground(BLACK);
-      mp.render();
+      mp1.render();
+      mp2.render();
+      mp3.render();
     EndDrawing();
   }
   
