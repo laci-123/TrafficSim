@@ -14,8 +14,8 @@ clean:
 
 .PHONY: all clean
 
-build/index.js: obj/main.o obj/movable_point.o raylib/src/libraylib.a | build
-	$(CXX) $(LINKFLAGS) $(LIBS) obj/main.o obj/movable_point.o -o build/index.js
+build/index.js: obj/main.o obj/bezier_curve.o raylib/src/libraylib.a | build
+	$(CXX) $(LINKFLAGS) $(LIBS) obj/main.o obj/movable_point.o obj/bezier_curve.o -o build/index.js
 
 build/index.html: src/index.html | build
 	cp $< $@
@@ -29,8 +29,11 @@ obj:
 build:
 	mkdir build
 
-obj/main.o: src/main.cpp src/movable_point.hpp | obj
+obj/main.o: src/main.cpp src/bezier_curve.hpp | obj
 	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
 
 obj/movable_point.o: src/movable_point.cpp | obj
+	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
+
+obj/bezier_curve.o: src/bezier_curve.cpp src/movable_point.hpp | obj
 	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@

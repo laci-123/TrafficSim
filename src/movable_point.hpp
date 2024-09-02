@@ -14,10 +14,10 @@ public:
   void attach(MovablePoint& other);
   void update(float dt);
   void render() const;
-private:
   Vector2 position;
   float radius;
   Color color;
+private:
   std::optional<Vector2> mouse_offset;
   std::vector<std::reference_wrapper<MovablePoint>> attached_points;
 };
