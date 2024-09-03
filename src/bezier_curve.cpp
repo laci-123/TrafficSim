@@ -19,6 +19,10 @@ BezierCurve::BezierCurve(Vector2 end_point_1, Vector2 control_point_1, Vector2 c
   this->mp.attach(this->ep2);
 }
 
+Vector2 BezierCurve::position_at(float tau) const {
+  return GetSplinePointBezierCubic(this->ep1.position, this->cp1.position, this->cp2.position, this->ep2.position, tau);
+}
+
 Vector2 BezierCurve::derivative_at(float tau) const {
   // BC(tau)  =    (1 - tau)^3*P1 +      3*tau*(1 - tau)^2*C1 +   3tau^2*(1 - tau)*C2 +   tau^3*P2
   // BC'(tau) = -3*(1 - tau)^2*P1 + (9*tau^2 - 12*tau + 3)*C1 + (-9*tau^2 + 6*tau)*C2 + 3*tau^2*P2
