@@ -12,7 +12,7 @@ class MovablePoint {
 public:
   MovablePoint(Vector2 position, float radius, Color color);
   void attach(MovablePoint& other);
-  void update(float dt);
+  bool update(float dt); // returns true if the point has been moved
   void render() const;
   Vector2 position;
   float radius;
