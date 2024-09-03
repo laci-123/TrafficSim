@@ -2,7 +2,8 @@
 
 
 BezierCurve::BezierCurve(Vector2 end_point_1, Vector2 control_point_1, Vector2 control_point_2, Vector2 end_point_2, Color color, float thickness)
-  :ep1{end_point_1, 7.0f, color},
+  :is_in_design_mode{false},
+   ep1{end_point_1, 7.0f, color},
    cp1{control_point_1, 7.0f, color},
    cp2{control_point_2, 7.0f, color},
    ep2{end_point_2, 7.0f, color},
@@ -124,7 +125,7 @@ void BezierCurve::update(float dt) {
   bool cp1_moved = this->cp1.update(dt);
   bool cp2_moved = this->cp2.update(dt);
   bool ep2_moved = this->ep2.update(dt);
-  bool mp_moved  = this->mp.update(dt);
+  bool mp_moved  = this->is_in_design_mode ? this->mp.update(dt) : false;
 
   if(ep1_moved || cp1_moved || cp2_moved || ep2_moved || mp_moved) {
     this->cached_tight_bounding_rect = this->tight_bounding_rect();
@@ -141,14 +142,9 @@ void BezierCurve::update(float dt) {
 }
 
 void BezierCurve::render() const {
-  this->ep1.render();
-  this->cp1.render();
-  this->cp2.render();
-  this->ep2.render();
-
   float thickness{this->thickness};
   Color color{this->color};
-  if(this->is_mouse_over) {
+  if(this->is_in_design_mode && this->is_mouse_over) {
     thickness *= 1.5;
     color = YELLOW;
   }
@@ -160,6 +156,13 @@ void BezierCurve::render() const {
                                thickness,
                                color);
 
-  DrawLineEx(this->ep1.position, this->cp1.position, 1, this->color);
-  DrawLineEx(this->ep2.position, this->cp2.position, 1, this->color);
+  if(this->is_in_design_mode) {
+    this->ep1.render();
+    this->cp1.render();
+    this->cp2.render();
+    this->ep2.render();
+
+    DrawLineEx(this->ep1.position, this->cp1.position, 1, this->color);
+    DrawLineEx(this->ep2.position, this->cp2.position, 1, this->color);
+  }
 }

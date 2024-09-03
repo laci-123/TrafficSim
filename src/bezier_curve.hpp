@@ -11,6 +11,7 @@ public:
   Vector2 derivative_at(float tau) const;
   void update(float dt);
   void render() const;
+  bool is_in_design_mode;
 private:
   Rectangle tight_bounding_rect() const;
   bool check_collision(Vector2 c, float r);
