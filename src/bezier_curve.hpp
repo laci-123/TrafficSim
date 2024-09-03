@@ -13,10 +13,13 @@ public:
   void render() const;
 private:
   Rectangle tight_bounding_rect() const;
+  bool check_collision(Vector2 c, float r);
   MovablePoint ep1; 
   MovablePoint cp1; 
   MovablePoint cp2; 
   MovablePoint ep2; 
+  MovablePoint mp;
+  bool is_mouse_over;
   Color color;
   float thickness;
   Rectangle cached_tight_bounding_rect;

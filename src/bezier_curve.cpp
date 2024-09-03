@@ -2,16 +2,20 @@
 
 
 BezierCurve::BezierCurve(Vector2 end_point_1, Vector2 control_point_1, Vector2 control_point_2, Vector2 end_point_2, Color color, float thickness)
-  :ep1{end_point_1, 5.0f, color},
-   cp1{control_point_1, 5.0f, color},
-   cp2{control_point_2, 5.0f, color},
-   ep2{end_point_2, 5.0f, color},
+  :ep1{end_point_1, 7.0f, color},
+   cp1{control_point_1, 7.0f, color},
+   cp2{control_point_2, 7.0f, color},
+   ep2{end_point_2, 7.0f, color},
    color{color},
    thickness{thickness},
    cached_tight_bounding_rect{this->tight_bounding_rect()}
 {
-  this->ep1.attach(cp1);
-  this->ep2.attach(cp2);
+  this->ep1.attach(this->cp1);
+  this->ep2.attach(this->cp2);
+  this->mp.attach(this->ep1);
+  this->mp.attach(this->cp1);
+  this->mp.attach(this->cp2);
+  this->mp.attach(this->ep2);
 }
 
 Vector2 BezierCurve::derivative_at(float tau) const {
@@ -100,14 +104,39 @@ Rectangle BezierCurve::tight_bounding_rect() const {
   return Rectangle{left, top, right - left, bottom - top};
 }
 
+bool BezierCurve::check_collision(Vector2 c, float r) {
+  if(!CheckCollisionPointRec(c, this->cached_tight_bounding_rect)) {
+    return false;
+  }
+
+  for(float tau = 0.0; tau <= 1.0; tau += 0.01) {
+    Vector2 p = GetSplinePointBezierCubic(this->ep1.position, this->cp1.position, this->cp2.position, this->ep2.position, tau);
+    if(CheckCollisionPointCircle(p, c, r)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 void BezierCurve::update(float dt) {
   bool ep1_moved = this->ep1.update(dt);
   bool cp1_moved = this->cp1.update(dt);
   bool cp2_moved = this->cp2.update(dt);
   bool ep2_moved = this->ep2.update(dt);
+  bool mp_moved  = this->mp.update(dt);
 
-  if(ep1_moved || cp1_moved || cp2_moved || ep2_moved) {
+  if(ep1_moved || cp1_moved || cp2_moved || ep2_moved || mp_moved) {
     this->cached_tight_bounding_rect = this->tight_bounding_rect();
+  }
+
+  Vector2 mouse{GetMousePosition()};
+  if(this->check_collision(mouse, 3.0f)) {
+    this->mp.position = mouse;
+    this->is_mouse_over = true;
+  }
+  else {
+    this->is_mouse_over = false;
   }
 }
 
@@ -117,15 +146,20 @@ void BezierCurve::render() const {
   this->cp2.render();
   this->ep2.render();
 
+  float thickness{this->thickness};
+  Color color{this->color};
+  if(this->is_mouse_over) {
+    thickness *= 1.5;
+    color = YELLOW;
+  }
+
   DrawSplineSegmentBezierCubic(this->ep1.position,
                                this->cp1.position,
                                this->cp2.position,
                                this->ep2.position,
-                               this->thickness,
-                               this->color);
+                               thickness,
+                               color);
 
   DrawLineEx(this->ep1.position, this->cp1.position, 1, this->color);
   DrawLineEx(this->ep2.position, this->cp2.position, 1, this->color);
-
-  DrawRectangleLinesEx(this->cached_tight_bounding_rect, 1.0f, BLUE);
 }
