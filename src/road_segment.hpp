@@ -3,19 +3,23 @@
 
 #include "bezier_curve.hpp"
 #include "context_menu.hpp"
+#include "road_network.hpp"
 #include "raylib.h"
 #include "raymath.h"
 
-class RoadSegment {
+class RoadSegment: public RoadNetworkPart {
 public:
   RoadSegment(Vector2 end_point1, Vector2 end_point2);
-  ~RoadSegment();
-  void update(float dt);
-  void render() const;
+  virtual ~RoadSegment() override;
+  virtual void update(float dt) override;
+  virtual void render() const override;
+  virtual void add_network(RoadNetwork* network, size_t index_in_network) override;
 private:
   BezierCurve bc;
   Texture2D tile;
   ContextMenu context_menu;
+  RoadNetwork* network;
+  size_t index_in_network;
 };
 
 #endif // ROAD_SEGMENT_HPP_

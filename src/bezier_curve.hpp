@@ -8,6 +8,7 @@
 class BezierCurve {
 public:
   BezierCurve(Vector2 end_point_1, Vector2 control_point_1, Vector2 control_point_2, Vector2 end_point_2, Color color, float thickness);
+  BezierCurve(const BezierCurve& other);
   Vector2 position_at(float tau) const;
   Vector2 derivative_at(float tau) const;
   void update(float dt);

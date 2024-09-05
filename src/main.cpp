@@ -1,7 +1,8 @@
 #include "raylib.h"
 #include "road_segment.hpp"
+#include "road_network.hpp"
 #include <string>
-#include <fstream>
+#include <memory>
 
 int main(int argc, char **argv) {
   int init_window_width { std::stoi(argv[1]) };
@@ -11,15 +12,18 @@ int main(int argc, char **argv) {
   InitWindow(init_window_width, init_window_height, "Raylib WASM Example");
   SetWindowState(FLAG_WINDOW_RESIZABLE);
 
-  RoadSegment road{Vector2{10.0f, 10.0f}, Vector2{100.0f, 50.0f}};
+  RoadNetwork network;
+  network.add_part(std::make_unique<RoadSegment>(RoadSegment{Vector2{10.0f, 10.0f}, Vector2{100.0f, 50.0f}}));
+  network.add_part(std::make_unique<RoadSegment>(RoadSegment{Vector2{10.0f, 40.0f}, Vector2{200.0f, 50.0f}}));
+  network.add_part(std::make_unique<RoadSegment>(RoadSegment{Vector2{50.0f, 20.0f}, Vector2{300.0f, 10.0f}}));
   
   while (!WindowShouldClose()) {
     float dt = GetFrameTime();
-    road.update(dt);
+    network.update(dt);
 
     BeginDrawing();
       ClearBackground(BROWN);
-      road.render();
+      network.render();
     EndDrawing();
   }
   

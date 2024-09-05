@@ -55,3 +55,8 @@ void RoadSegment::render() const {
 
   this->context_menu.render();
 }
+
+void RoadSegment::add_network(RoadNetwork* network, size_t index_in_network) {
+  this->network = network;
+  this->index_in_network = index_in_network;
+}

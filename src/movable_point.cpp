@@ -4,6 +4,13 @@ MovablePoint::MovablePoint(Vector2 position, float radius, Color color)
   :position{position}, radius{radius}, color{color}
 {}
 
+MovablePoint::MovablePoint(const MovablePoint& other)
+  :position{other.position},
+   radius{other.radius},
+   color{other.color},
+   attached_points{}
+{}
+
 void MovablePoint::attach(MovablePoint& other) {
   this->attached_points.push_back(other);
 }

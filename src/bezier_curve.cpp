@@ -19,6 +19,25 @@ BezierCurve::BezierCurve(Vector2 end_point_1, Vector2 control_point_1, Vector2 c
   this->mp.attach(this->ep2);
 }
 
+BezierCurve::BezierCurve(const BezierCurve& other)
+  :is_in_design_mode{other.is_in_design_mode},
+   ep1{other.ep1},
+   cp1{other.cp1},
+   cp2{other.cp2},
+   ep2{other.ep2},
+   mp{other.mp},
+   color{other.color},
+   thickness{other.thickness},
+   cached_tight_bounding_rect{other.cached_tight_bounding_rect}
+{
+  this->ep1.attach(this->cp1);
+  this->ep2.attach(this->cp2);
+  this->mp.attach(this->ep1);
+  this->mp.attach(this->cp1);
+  this->mp.attach(this->cp2);
+  this->mp.attach(this->ep2);
+}
+
 Vector2 BezierCurve::position_at(float tau) const {
   return GetSplinePointBezierCubic(this->ep1.position, this->cp1.position, this->cp2.position, this->ep2.position, tau);
 }
