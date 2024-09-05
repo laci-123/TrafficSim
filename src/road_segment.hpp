@@ -8,10 +8,12 @@
 class RoadSegment {
 public:
   RoadSegment(Vector2 end_point1, Vector2 end_point2);
+  ~RoadSegment();
   void update(float dt);
   void render() const;
 private:
   BezierCurve bc;
+  Texture2D tile;
   bool is_in_design_mode;
 };
 

@@ -15,13 +15,13 @@ clean:
 
 #		cannot use a wildcard here because these files potentially do not exist yet
 build/index.js: obj/main.o obj/bezier_curve.o obj/movable_point.o obj/road_segment.o raylib/src/libraylib.a | build
-	$(CXX) $(LINKFLAGS) $^ -o build/index.js
+	$(CXX) $(LINKFLAGS) $^ --preload-file ./assets -o build/index.js
 
 build/index.html: src/index.html | build
 	cp $< $@
 
 raylib/src/libraylib.a:
-	cd raylib/src && make PLATFORM=PLATFORM_WEB
+	cd raylib/src && make PLATFORM=PLATFORM_WEB CUSTOM_CFLAGS="-DSUPPORT_FILEFORMAT_SVG"
 
 obj:
 	mkdir obj
