@@ -29,7 +29,7 @@ obj:
 build:
 	mkdir build
 
-obj/main.o: src/main.cpp src/road_segment.hpp src/context_menu.hpp | obj
+obj/main.o: src/main.cpp src/road_segment.hpp | obj
 	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
 
 obj/movable_point.o: src/movable_point.cpp | obj
@@ -38,7 +38,7 @@ obj/movable_point.o: src/movable_point.cpp | obj
 obj/bezier_curve.o: src/bezier_curve.cpp src/movable_point.hpp | obj
 	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
 
-obj/road_segment.o: src/road_segment.cpp src/bezier_curve.hpp | obj
+obj/road_segment.o: src/road_segment.cpp src/bezier_curve.hpp src/context_menu.hpp | obj
 	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
 
 obj/context_menu.o: src/context_menu.cpp | obj

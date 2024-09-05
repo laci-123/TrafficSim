@@ -6,15 +6,9 @@ static constexpr int PADDING     = 4;
 static constexpr int RECT_HEIGHT = FONT_SIZE + 2 * PADDING;
 
 ContextMenu::ContextMenu(std::initializer_list<std::string> entries) 
-  :entries{entries}, visible{false}, width{0} 
+  :entries{entries}
 {
-  for(const std::string& entry: entries) {
-    int entry_width = MeasureText(entry.c_str(), FONT_SIZE);
-    if(entry_width > this->width) {
-      this->width = entry_width;
-    }
-  }
-  this->width += 2 * PADDING;  
+  this->calculate_width();
 }
 
 void ContextMenu::update(float dt) {
@@ -33,7 +27,7 @@ void ContextMenu::update(float dt) {
       }
     }
     else {
-      if(IsMouseButtonDown(MOUSE_BUTTON_LEFT) || IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
+      if(IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
         this->visible = false;
       }
     }
@@ -66,4 +60,24 @@ void ContextMenu::show(Vector2 position) {
                                   this->width,
                                   RECT_HEIGHT);
   }
+}
+
+std::string ContextMenu::get_entry(size_t index) {
+  return this->entries[index];
+}
+
+void ContextMenu::set_entry(size_t index, std::string entry) {
+  this->entries[index] = entry;
+  this->calculate_width();
+}
+
+void ContextMenu::calculate_width() {
+  this->width = 0;
+  for(const std::string& entry: entries) {
+    int entry_width = MeasureText(entry.c_str(), FONT_SIZE);
+    if(entry_width > this->width) {
+      this->width = entry_width;
+    }
+  }
+  this->width += 2 * PADDING;  
 }

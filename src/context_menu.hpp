@@ -14,10 +14,13 @@ public:
   void update(float dt);
   void render() const;
   void show(Vector2 position);
+  std::string get_entry(size_t index);
+  void set_entry(size_t index, std::string entry);
   std::optional<size_t> selected_entry;
-  std::vector<std::string> entries;
   bool visible;
 private:
+  void calculate_width();
+  std::vector<std::string> entries;
   std::optional<size_t> hovered_entry;
   std::vector<Rectangle> rectangles;
   int width;

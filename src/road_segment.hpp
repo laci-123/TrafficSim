@@ -2,6 +2,7 @@
 #define ROAD_SEGMENT_HPP_
 
 #include "bezier_curve.hpp"
+#include "context_menu.hpp"
 #include "raylib.h"
 #include "raymath.h"
 
@@ -15,6 +16,7 @@ private:
   BezierCurve bc;
   Texture2D tile;
   bool is_in_design_mode;
+  ContextMenu context_menu;
 };
 
 #endif // ROAD_SEGMENT_HPP_
