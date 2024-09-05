@@ -15,7 +15,6 @@ public:
 private:
   BezierCurve bc;
   Texture2D tile;
-  bool is_in_design_mode;
   ContextMenu context_menu;
 };
 

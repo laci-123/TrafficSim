@@ -25,12 +25,10 @@ void RoadSegment::update(float dt) {
   if(this->context_menu.selected_entry) {
     size_t selected = *this->context_menu.selected_entry;
     if(this->context_menu.get_entry(selected) == "edit") {
-      this->is_in_design_mode = true;
       this->bc.is_in_design_mode = true;
       this->context_menu.set_entry(selected, "done editing");
     }
     else if(this->context_menu.get_entry(selected) == "done editing") {
-      this->is_in_design_mode = false;
       this->bc.is_in_design_mode = false;
       this->context_menu.set_entry(selected, "edit");
     }
@@ -41,7 +39,7 @@ void RoadSegment::update(float dt) {
 }
 
 void RoadSegment::render() const {
-  if(this->is_in_design_mode) {
+  if(this->bc.is_in_design_mode) {
     this->bc.render();
   }
   else {
