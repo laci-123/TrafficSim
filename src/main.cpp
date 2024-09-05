@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "road_segment.hpp"
+#include "context_menu.hpp"
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -13,14 +14,24 @@ int main(int argc, char **argv) {
   SetWindowState(FLAG_WINDOW_RESIZABLE);
 
   RoadSegment road{Vector2{10.0f, 10.0f}, Vector2{100.0f, 50.0f}};
+  ContextMenu cm{"cat", "dog", "elephant", "this line has multiple words", "parrot"};
   
   while (!WindowShouldClose()) {
     float dt = GetFrameTime();
     road.update(dt);
+    cm.update(dt);
+
+    if(!cm.visible && IsMouseButtonDown(MOUSE_BUTTON_RIGHT)) {
+      cm.show(GetMousePosition());
+    }
+    if(cm.selected_entry) {
+      std::cout << cm.entries[*cm.selected_entry] << std::endl;
+    }
 
     BeginDrawing();
       ClearBackground(BLACK);
       road.render();
+      cm.render();
     EndDrawing();
   }
   
