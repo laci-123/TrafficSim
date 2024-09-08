@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include "road_segment.hpp"
 #include "road_network.hpp"
+#include "intersection.hpp"
 #include "assets.hpp"
 #include <string>
 #include <memory>
@@ -18,6 +19,8 @@ int main(int argc, char **argv) {
   network.add_part(std::make_unique<RoadSegment>(RoadSegment{Vector2{10.0f, 10.0f}, Vector2{100.0f, 50.0f}, network}));
   network.add_part(std::make_unique<RoadSegment>(RoadSegment{Vector2{10.0f, 40.0f}, Vector2{200.0f, 50.0f}, network}));
   network.add_part(std::make_unique<RoadSegment>(RoadSegment{Vector2{50.0f, 20.0f}, Vector2{300.0f, 10.0f}, network}));
+  network.add_part(std::make_unique<Intersection>(Intersection{Vector2{100, 100}, network}));
+  network.add_part(std::make_unique<Intersection>(Intersection{Vector2{120, 150}, network}));
   
   while (!WindowShouldClose()) {
     float dt = GetFrameTime();

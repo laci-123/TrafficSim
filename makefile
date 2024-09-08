@@ -14,8 +14,8 @@ clean:
 .PHONY: all clean
 
 #		cannot use a wildcard here because these files potentially do not exist yet
-build/index.js: obj/assets.o obj/road_network.o obj/main.o obj/context_menu.o obj/bezier_curve.o obj/movable_point.o obj/road_segment.o raylib/src/libraylib.a | build
-	$(CXX) $(LINKFLAGS) $^ --preload-file ./assets -o build/index.js
+build/index.js: obj/intersection.o obj/assets.o obj/road_network.o obj/main.o obj/context_menu.o obj/bezier_curve.o obj/movable_point.o obj/road_segment.o raylib/src/libraylib.a $(wildcard assets/*) | build
+	$(CXX) $(LINKFLAGS) $(filter-out $(wildcard assets/*), $^) --preload-file ./assets -o build/index.js
 
 build/index.html: src/index.html | build
 	cp $< $@
@@ -38,7 +38,7 @@ obj/movable_point.o: src/movable_point.cpp | obj
 obj/bezier_curve.o: src/bezier_curve.cpp src/movable_point.hpp | obj
 	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
 
-obj/road_segment.o: src/road_segment.cpp src/bezier_curve.hpp src/context_menu.hpp src/road_network.hpp src/assets.hpp | obj
+obj/road_segment.o: src/road_segment.cpp src/bezier_curve.hpp src/context_menu.hpp src/road_network.hpp | obj
 	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
 
 obj/context_menu.o: src/context_menu.cpp | obj
@@ -48,5 +48,8 @@ obj/road_network.o: src/road_network.cpp src/assets.hpp | obj
 	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
 
 obj/assets.o: src/assets.cpp | obj
+	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
+
+obj/intersection.o: src/intersection.cpp src/road_network.hpp | obj
 	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
 
