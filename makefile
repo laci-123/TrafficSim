@@ -44,7 +44,7 @@ obj/road_segment.o: src/road_segment.cpp src/bezier_curve.hpp src/context_menu.h
 obj/context_menu.o: src/context_menu.cpp | obj
 	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
 
-obj/road_network.o: src/road_network.cpp | obj
+obj/road_network.o: src/road_network.cpp src/assets.hpp | obj
 	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
 
 obj/assets.o: src/assets.cpp | obj

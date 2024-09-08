@@ -14,10 +14,10 @@ int main(int argc, char **argv) {
   SetWindowState(FLAG_WINDOW_RESIZABLE);
 
   Assets assets;
-  RoadNetwork network;
-  network.add_part(std::make_unique<RoadSegment>(RoadSegment{Vector2{10.0f, 10.0f}, Vector2{100.0f, 50.0f}, assets}));
-  network.add_part(std::make_unique<RoadSegment>(RoadSegment{Vector2{10.0f, 40.0f}, Vector2{200.0f, 50.0f}, assets}));
-  network.add_part(std::make_unique<RoadSegment>(RoadSegment{Vector2{50.0f, 20.0f}, Vector2{300.0f, 10.0f}, assets}));
+  RoadNetwork network{assets};
+  network.add_part(std::make_unique<RoadSegment>(RoadSegment{Vector2{10.0f, 10.0f}, Vector2{100.0f, 50.0f}, network}));
+  network.add_part(std::make_unique<RoadSegment>(RoadSegment{Vector2{10.0f, 40.0f}, Vector2{200.0f, 50.0f}, network}));
+  network.add_part(std::make_unique<RoadSegment>(RoadSegment{Vector2{50.0f, 20.0f}, Vector2{300.0f, 10.0f}, network}));
   
   while (!WindowShouldClose()) {
     float dt = GetFrameTime();

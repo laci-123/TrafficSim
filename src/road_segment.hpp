@@ -4,24 +4,27 @@
 #include "bezier_curve.hpp"
 #include "context_menu.hpp"
 #include "road_network.hpp"
-#include "assets.hpp"
 #include "raylib.h"
 #include "raymath.h"
 #include <memory>
+#include <unordered_set>
 
 class RoadSegment: public RoadNetworkPart {
 public:
-  RoadSegment(Vector2 end_point1, Vector2 end_point2, Assets& assets);
+  RoadSegment(Vector2 end_point1, Vector2 end_point2, RoadNetwork& network);
   virtual ~RoadSegment() override {};
   virtual void update(float dt) override;
   virtual void render() const override;
-  virtual void add_network(RoadNetwork* network, size_t index_in_network) override;
+  virtual const std::unordered_set<size_t>& get_neighbours() const override;
+  virtual void add_neighbour(size_t index) override;
+  virtual void remove_neighbour(size_t index) override;
 private:
   BezierCurve bc;
-  std::shared_ptr<Texture2D> tile;
   ContextMenu context_menu;
-  RoadNetwork* network;
+  RoadNetwork& network;
   size_t index_in_network;
+  std::shared_ptr<Texture2D> tile;
+  std::unordered_set<size_t> neighbours;
 };
 
 #endif // ROAD_SEGMENT_HPP_

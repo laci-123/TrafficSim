@@ -1,12 +1,13 @@
 #include "road_segment.hpp"
 
 
-RoadSegment::RoadSegment(Vector2 end_point_1, Vector2 end_point_2, Assets& assets)
+RoadSegment::RoadSegment(Vector2 end_point_1, Vector2 end_point_2, RoadNetwork& network)
   :bc{end_point_1, Vector2Add(end_point_1, Vector2{10.0f, 10.0f}), Vector2Add(end_point_2, Vector2{-10.0f, -10.0f}), end_point_2, WHITE, 1.0f},
-   context_menu{"edit", "delete"}
-{
-  this->tile = assets.get_texture("assets/road_tile.svg", 10, 20);
-}
+   context_menu{"edit", "delete"},
+   network{network},
+   index_in_network{network.next_index()},
+   tile{network.get_assets().get_texture("assets/road_tile.svg", 10, 20)}
+{}
 
 void RoadSegment::update(float dt) {
   if(!this->context_menu.visible){
@@ -25,6 +26,9 @@ void RoadSegment::update(float dt) {
     else if(this->context_menu.get_entry(selected) == "done editing") {
       this->bc.is_in_design_mode = false;
       this->context_menu.set_entry(selected, "edit");
+    }
+    if(this->context_menu.get_entry(selected) == "delete") {
+      this->network.remove_part(this->index_in_network);
     }
     this->context_menu.selected_entry = {};
   }
@@ -50,7 +54,14 @@ void RoadSegment::render() const {
   this->context_menu.render();
 }
 
-void RoadSegment::add_network(RoadNetwork* network, size_t index_in_network) {
-  this->network = network;
-  this->index_in_network = index_in_network;
+const std::unordered_set<size_t>& RoadSegment::get_neighbours() const {
+  return this->neighbours;
+}
+
+void RoadSegment::add_neighbour(size_t index) {
+  this->neighbours.insert(index);
+}
+
+void RoadSegment::remove_neighbour(size_t index) {
+  this->neighbours.erase(index);
 }
