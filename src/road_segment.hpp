@@ -7,7 +7,6 @@
 #include "raylib.h"
 #include "raymath.h"
 #include <memory>
-#include <unordered_set>
 
 class RoadSegment: public RoadNetworkPart {
 public:
@@ -15,16 +14,12 @@ public:
   virtual ~RoadSegment() override {};
   virtual void update(float dt) override;
   virtual void render() const override;
-  virtual const std::unordered_set<size_t>& get_neighbours() const override;
-  virtual void add_neighbour(size_t index) override;
-  virtual void remove_neighbour(size_t index) override;
 private:
   BezierCurve bc;
   ContextMenu context_menu;
   RoadNetwork& network;
   size_t index_in_network;
   std::shared_ptr<Texture2D> tile;
-  std::unordered_set<size_t> neighbours;
 };
 
 #endif // ROAD_SEGMENT_HPP_

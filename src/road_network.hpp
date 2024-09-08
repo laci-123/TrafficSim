@@ -15,9 +15,11 @@ public:
   virtual ~RoadNetworkPart() {};
   virtual void update(float dt) = 0;
   virtual void render() const = 0;
-  virtual const std::unordered_set<size_t>& get_neighbours() const = 0;
-  virtual void add_neighbour(size_t index) = 0;
-  virtual void remove_neighbour(size_t index) = 0;
+  const std::unordered_set<size_t>& get_neighbours() const;
+  void add_neighbour(size_t index);
+  void remove_neighbour(size_t index);
+private:
+  std::unordered_set<size_t> neighbours;
 };
 
 class RoadNetwork {

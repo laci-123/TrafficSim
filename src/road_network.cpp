@@ -1,5 +1,18 @@
 #include "road_network.hpp"
 
+
+const std::unordered_set<size_t>& RoadNetworkPart::get_neighbours() const {
+  return this->neighbours;
+}
+
+void RoadNetworkPart::add_neighbour(size_t index) {
+  this->neighbours.insert(index);
+}
+
+void RoadNetworkPart::remove_neighbour(size_t index) {
+  this->neighbours.erase(index);
+}
+
 RoadNetwork::RoadNetwork(Assets& assets)
   :assets{assets}
 {}

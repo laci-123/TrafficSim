@@ -53,15 +53,3 @@ void RoadSegment::render() const {
 
   this->context_menu.render();
 }
-
-const std::unordered_set<size_t>& RoadSegment::get_neighbours() const {
-  return this->neighbours;
-}
-
-void RoadSegment::add_neighbour(size_t index) {
-  this->neighbours.insert(index);
-}
-
-void RoadSegment::remove_neighbour(size_t index) {
-  this->neighbours.erase(index);
-}
