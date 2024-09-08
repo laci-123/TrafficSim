@@ -25,6 +25,7 @@ private:
 class RoadNetwork {
 public:
   RoadNetwork(Assets& assets);
+  RoadNetwork(const RoadNetwork& other) = delete;
   void add_part(std::unique_ptr<RoadNetworkPart> part);
   void remove_part(size_t index);
   void update(float dt);

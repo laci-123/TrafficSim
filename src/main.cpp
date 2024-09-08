@@ -3,6 +3,7 @@
 #include "road_network.hpp"
 #include "intersection.hpp"
 #include "assets.hpp"
+#include "toolbox.hpp"
 #include <string>
 #include <memory>
 
@@ -21,14 +22,22 @@ int main(int argc, char **argv) {
   network.add_part(std::make_unique<RoadSegment>(RoadSegment{Vector2{50.0f, 20.0f}, Vector2{300.0f, 10.0f}, network}));
   network.add_part(std::make_unique<Intersection>(Intersection{Vector2{100, 100}, network}));
   network.add_part(std::make_unique<Intersection>(Intersection{Vector2{120, 150}, network}));
+
+  auto entries = {
+    Entry{"road segment", [](Vector2 position, RoadNetwork& network){return std::make_unique<RoadSegment>(RoadSegment{Vector2{10.0f, 10.0f}, position, network});}},
+    Entry{"intersection", [](Vector2 position, RoadNetwork& network){return std::make_unique<Intersection>(Intersection{position, network});}},
+  };
+  Toolbox toolbox{Vector2{200, 10}, network, entries};
   
   while (!WindowShouldClose()) {
     float dt = GetFrameTime();
     network.update(dt);
+    toolbox.update();
 
     BeginDrawing();
       ClearBackground(BROWN);
       network.render();
+      toolbox.render();
     EndDrawing();
   }
   

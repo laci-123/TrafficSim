@@ -18,7 +18,7 @@ RoadNetwork::RoadNetwork(Assets& assets)
 {}
 
 void RoadNetwork::add_part(std::unique_ptr<RoadNetworkPart> part) {
-  this->parts.insert({this->index++, std::move(part)});
+  this->parts.emplace(this->index++, std::move(part));
 }
 
 void RoadNetwork::remove_part(size_t index) {
