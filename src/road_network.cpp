@@ -1,5 +1,4 @@
 #include "road_network.hpp"
-#include <iostream>
 
 
 const std::unordered_set<size_t>& RoadNetworkPart::get_neighbours() const {
