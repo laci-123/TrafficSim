@@ -1,12 +1,20 @@
 #include "road_segment.hpp"
 
 
-RoadSegment::RoadSegment(Vector2 end_point_1, Vector2 end_point_2, RoadNetwork& network)
-  :bc{end_point_1, Vector2Add(end_point_1, Vector2{10.0f, 10.0f}), Vector2Add(end_point_2, Vector2{-10.0f, -10.0f}), end_point_2, WHITE, 1.0f},
+RoadSegment::RoadSegment(Vector2 end_point_1, Vector2 control_point_1, Vector2 control_point_2, Vector2 end_point_2, RoadNetwork& network)
+  :bc{end_point_1, control_point_1, control_point_2, end_point_2, WHITE, 1.0f},
    context_menu{"edit", "delete"},
    network{network},
    index_in_network{network.next_index()},
    tile{network.get_assets().get_texture("assets/road_tile.svg", 10, 20)}
+{}
+
+RoadSegment::RoadSegment(Vector2 position, RoadNetwork& network)
+  :RoadSegment{Vector2Add(position, Vector2{-40, -40}),
+               Vector2Add(position, Vector2{0, -40}),
+               Vector2Add(position, Vector2{0, 40}),
+               Vector2Add(position, Vector2{40, 40}),
+               network}
 {}
 
 void RoadSegment::update(float dt) {

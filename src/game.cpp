@@ -9,7 +9,7 @@ Game::Game()
      Vector2{20, 20},
      this->network,
      {
-       Entry{"road segment", [](Vector2 position, RoadNetwork& network){return std::make_unique<RoadSegment>(RoadSegment{Vector2{10.0f, 10.0f}, position, network});}},
+       Entry{"road segment", [](Vector2 position, RoadNetwork& network){return std::make_unique<RoadSegment>( RoadSegment{ position, network});}},
        Entry{"intersection", [](Vector2 position, RoadNetwork& network){return std::make_unique<Intersection>(Intersection{position, network});}},
      }
    }

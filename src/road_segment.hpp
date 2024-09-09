@@ -10,7 +10,8 @@
 
 class RoadSegment: public RoadNetworkPart {
 public:
-  RoadSegment(Vector2 end_point1, Vector2 end_point2, RoadNetwork& network);
+  RoadSegment(Vector2 end_point_1, Vector2 control_point_1, Vector2 control_point_2, Vector2 end_point_2, RoadNetwork& network);
+  RoadSegment(Vector2 position, RoadNetwork& network);
   virtual ~RoadSegment() override {};
   virtual void update(float dt) override;
   virtual void render() const override;
