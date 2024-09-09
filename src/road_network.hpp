@@ -7,6 +7,7 @@
 #include <memory>
 #include <unordered_map>
 #include <unordered_set>
+#include <functional>
 
 class RoadNetwork;
 
@@ -36,6 +37,7 @@ private:
   std::unordered_map<size_t, std::unique_ptr<RoadNetworkPart>> parts;
   Assets& assets;
   size_t index;
+  std::optional<size_t> part_to_be_removed;
 };
 
 #endif //ROAD_NETWORK_INCLUDED_

@@ -1,4 +1,5 @@
 #include "road_network.hpp"
+#include <iostream>
 
 
 const std::unordered_set<size_t>& RoadNetworkPart::get_neighbours() const {
@@ -22,10 +23,14 @@ void RoadNetwork::add_part(std::unique_ptr<RoadNetworkPart> part) {
 }
 
 void RoadNetwork::remove_part(size_t index) {
-  this->parts.erase(index);
+  this->part_to_be_removed = index;
 }
 
 void RoadNetwork::update(float dt) {
+  if(this->part_to_be_removed) {
+    this->parts.erase(*this->part_to_be_removed);
+    this->part_to_be_removed = {};
+  }
   for(auto& [index, part]: this->parts){
     part->update(dt);
   }

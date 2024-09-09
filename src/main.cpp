@@ -1,11 +1,5 @@
 #include "raylib.h"
-#include "road_segment.hpp"
-#include "road_network.hpp"
-#include "intersection.hpp"
-#include "assets.hpp"
-#include "toolbox.hpp"
-#include <string>
-#include <memory>
+#include "game.hpp"
 
 int main(int argc, char **argv) {
   int init_window_width { std::stoi(argv[1]) };
@@ -15,29 +9,13 @@ int main(int argc, char **argv) {
   InitWindow(init_window_width, init_window_height, "Raylib WASM Example");
   SetWindowState(FLAG_WINDOW_RESIZABLE);
 
-  Assets assets;
-  RoadNetwork network{assets};
-  network.add_part(std::make_unique<RoadSegment>(RoadSegment{Vector2{10.0f, 10.0f}, Vector2{100.0f, 50.0f}, network}));
-  network.add_part(std::make_unique<RoadSegment>(RoadSegment{Vector2{10.0f, 40.0f}, Vector2{200.0f, 50.0f}, network}));
-  network.add_part(std::make_unique<RoadSegment>(RoadSegment{Vector2{50.0f, 20.0f}, Vector2{300.0f, 10.0f}, network}));
-  network.add_part(std::make_unique<Intersection>(Intersection{Vector2{100, 100}, network}));
-  network.add_part(std::make_unique<Intersection>(Intersection{Vector2{120, 150}, network}));
-
-  auto entries = {
-    Entry{"road segment", [](Vector2 position, RoadNetwork& network){return std::make_unique<RoadSegment>(RoadSegment{Vector2{10.0f, 10.0f}, position, network});}},
-    Entry{"intersection", [](Vector2 position, RoadNetwork& network){return std::make_unique<Intersection>(Intersection{position, network});}},
-  };
-  Toolbox toolbox{Vector2{200, 10}, network, entries};
+  Game game;
   
   while (!WindowShouldClose()) {
-    float dt = GetFrameTime();
-    network.update(dt);
-    toolbox.update();
+    game.update();
 
     BeginDrawing();
-      ClearBackground(BROWN);
-      network.render();
-      toolbox.render();
+      game.render();
     EndDrawing();
   }
   
