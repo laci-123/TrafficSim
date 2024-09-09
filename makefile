@@ -1,9 +1,24 @@
 # Assumes that Emscripten is on $PATH and all Emscripten environment variables are appropriately set.
 
-CXX       = em++
-CFLAGS    = -Wall -std=c++20 -c
-LINKFLAGS = -s USE_GLFW=3 -s ASYNCIFY
-INCLUDE	  = -I./raylib/src
+CXX        = em++
+CFLAGS     = -Wall -std=c++20 -c
+LINKFLAGS  = -s USE_GLFW=3 -s ASYNCIFY
+INCLUDE	   = -I./raylib/src
+LIBS       = raylib/src/libraylib.a
+ASSETS_DIR = ./assets/
+ASSETS     = $(wildcard $(ASSETS_DIR)/*)
+#            cannot use a wildcard here because these files potentially do not exist yet
+OBJ_FILES  = obj/game.o \
+	     obj/toolbox.o \
+             obj/intersection.o \
+             obj/assets.o \
+             obj/road_network.o \
+             obj/main.o \
+             obj/context_menu.o \
+             obj/bezier_curve.o \
+             obj/movable_point.o \
+             obj/road_segment.o
+
 
 all: build/index.js build/index.html
 
@@ -13,9 +28,8 @@ clean:
 
 .PHONY: all clean
 
-#		cannot use a wildcard here because these files potentially do not exist yet
-build/index.js: obj/game.o obj/toolbox.o obj/intersection.o obj/assets.o obj/road_network.o obj/main.o obj/context_menu.o obj/bezier_curve.o obj/movable_point.o obj/road_segment.o raylib/src/libraylib.a $(wildcard assets/*) | build
-	$(CXX) $(LINKFLAGS) $(filter-out $(wildcard assets/*), $^) --preload-file ./assets -o build/index.js
+build/index.js: $(OBJ_FILES) $(LIBS) $(ASSETS) | build
+	$(CXX) $(LINKFLAGS) $(OBJ_FILES) $(LIBS) --preload-file $(ASSETS_DIR) -o build/index.js
 
 build/index.html: src/index.html | build
 	cp $< $@
