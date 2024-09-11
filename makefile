@@ -17,7 +17,8 @@ OBJ_FILES  = obj/game.o \
              obj/context_menu.o \
              obj/bezier_curve.o \
              obj/movable_point.o \
-             obj/road_segment.o
+             obj/road_segment.o \
+             obj/dragable.o
 
 
 all: build/index.js build/index.html
@@ -64,12 +65,15 @@ obj/road_network.o: src/road_network.cpp src/assets.hpp | obj
 obj/assets.o: src/assets.cpp | obj
 	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
 
-obj/intersection.o: src/intersection.cpp src/road_network.hpp | obj
+obj/intersection.o: src/intersection.cpp src/road_network.hpp src/dragable.hpp | obj
 	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
 
 obj/toolbox.o: src/toolbox.cpp | obj
 	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
 
 obj/game.o: src/game.cpp src/assets.hpp src/toolbox.hpp src/road_network.hpp src/road_segment.hpp src/intersection.hpp | obj
+	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
+
+obj/dragable.o: src/dragable.cpp | obj
 	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
 
