@@ -20,12 +20,16 @@ bool Dragable::update() {
     if(this->mouse_offset) {
       this->set_position(Vector2Add(mouse, *this->mouse_offset));
     }
-    else if (this->is_mouse_over(mouse)) {
+    else if (this->is_mouse_over(mouse) && !this->mouse_was_already_down) {
       this->mouse_offset = Vector2Subtract(this->position, mouse);
+    }
+    else {
+      this->mouse_was_already_down = true;
     }
   }
   else {
     this->mouse_offset = {};
+    this->mouse_was_already_down = false;
   }
 
   return this->has_moved();

@@ -19,6 +19,7 @@ private:
   Vector2 position;
   Vector2 old_position;
   std::optional<Vector2> mouse_offset;
+  bool mouse_was_already_down;
   bool has_moved() const;
 };
 
