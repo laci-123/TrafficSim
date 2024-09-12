@@ -1,9 +1,9 @@
 # Assumes that Emscripten is on $PATH and all Emscripten environment variables are appropriately set.
 
 CXX        = em++
-CFLAGS     = -Wall -std=c++20 -c
+CFLAGS     = -Wall -Wextra -std=c++20 -c
 LINKFLAGS  = -s USE_GLFW=3 -s ASYNCIFY
-INCLUDE	   = -I./raylib/src
+INCLUDE	   = -isystem ./raylib/src
 LIBS       = raylib/src/libraylib.a
 ASSETS_DIR = ./assets/
 ASSETS     = $(wildcard $(ASSETS_DIR)/*)
@@ -47,7 +47,7 @@ build:
 obj/main.o: src/main.cpp src/game.hpp | obj
 	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
 
-obj/movable_point.o: src/movable_point.cpp | obj
+obj/movable_point.o: src/movable_point.cpp src/dragable.hpp | obj
 	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
 
 obj/bezier_curve.o: src/bezier_curve.cpp src/movable_point.hpp | obj
