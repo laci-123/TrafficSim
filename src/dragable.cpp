@@ -14,7 +14,7 @@ void Dragable::set_position(Vector2 position) {
   this->position = position;
 }
 
-bool Dragable::update() {
+Vector2 Dragable::update() {
   if(IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
     Vector2 mouse = GetMousePosition();
     if(this->mouse_offset) {
@@ -32,9 +32,5 @@ bool Dragable::update() {
     this->mouse_was_already_down = false;
   }
 
-  return this->has_moved();
-}
-
-bool Dragable::has_moved() const {
-  return !Vector2Equals(this->position, this->old_position);
+  return Vector2Subtract(this->position, this->old_position);
 }

@@ -3,24 +3,23 @@
 
 #include "raylib.h"
 #include "raymath.h"
-#include <optional>
+#include "dragable.hpp"
 #include <vector>
 #include <functional>
 
 
-class MovablePoint {
+class MovablePoint: public Dragable {
 public:
-  MovablePoint() = default;
   MovablePoint(Vector2 position, float radius, Color color);
   MovablePoint(const MovablePoint& other);
+  virtual bool is_mouse_over(Vector2 mouse) const override;
   void attach(MovablePoint& other);
-  bool update(float dt); // returns true if the point has been moved
+  // Returns how much the object moved since the last update
+  Vector2 update();
   void render() const;
-  Vector2 position;
   float radius;
   Color color;
 private:
-  std::optional<Vector2> mouse_offset;
   std::vector<std::reference_wrapper<MovablePoint>> attached_points;
 };
 

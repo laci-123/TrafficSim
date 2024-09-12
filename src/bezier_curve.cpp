@@ -1,12 +1,12 @@
 #include "bezier_curve.hpp"
 
-
 BezierCurve::BezierCurve(Vector2 end_point_1, Vector2 control_point_1, Vector2 control_point_2, Vector2 end_point_2, Color color, float thickness)
   :is_in_design_mode{false},
    ep1{end_point_1, 7.0f, color},
    cp1{control_point_1, 7.0f, color},
    cp2{control_point_2, 7.0f, color},
    ep2{end_point_2, 7.0f, color},
+   mp{Vector2Add(end_point_1, Vector2{10, 10}), 7.0f, RED},
    color{color},
    thickness{thickness},
    cached_tight_bounding_rect{this->tight_bounding_rect()}
@@ -14,8 +14,6 @@ BezierCurve::BezierCurve(Vector2 end_point_1, Vector2 control_point_1, Vector2 c
   this->ep1.attach(this->cp1);
   this->ep2.attach(this->cp2);
   this->mp.attach(this->ep1);
-  this->mp.attach(this->cp1);
-  this->mp.attach(this->cp2);
   this->mp.attach(this->ep2);
 }
 
@@ -33,23 +31,21 @@ BezierCurve::BezierCurve(const BezierCurve& other)
   this->ep1.attach(this->cp1);
   this->ep2.attach(this->cp2);
   this->mp.attach(this->ep1);
-  this->mp.attach(this->cp1);
-  this->mp.attach(this->cp2);
   this->mp.attach(this->ep2);
 }
 
 Vector2 BezierCurve::position_at(float tau) const {
-  return GetSplinePointBezierCubic(this->ep1.position, this->cp1.position, this->cp2.position, this->ep2.position, tau);
+  return GetSplinePointBezierCubic(this->ep1.get_position(), this->cp1.get_position(), this->cp2.get_position(), this->ep2.get_position(), tau);
 }
 
 Vector2 BezierCurve::derivative_at(float tau) const {
   // BC(tau)  =    (1 - tau)^3*P1 +      3*tau*(1 - tau)^2*C1 +   3tau^2*(1 - tau)*C2 +   tau^3*P2
   // BC'(tau) = -3*(1 - tau)^2*P1 + (9*tau^2 - 12*tau + 3)*C1 + (-9*tau^2 + 6*tau)*C2 + 3*tau^2*P2
 
-  Vector2 v1 = Vector2Scale(this->ep1.position, -3 * (1 - tau) * (1 - tau));
-  Vector2 v2 = Vector2Scale(this->cp1.position,  9 * tau * tau - 12 * tau + 3);
-  Vector2 v3 = Vector2Scale(this->cp2.position, -9 * tau * tau + 6 * tau);
-  Vector2 v4 = Vector2Scale(this->ep2.position,  3 * tau * tau);
+  Vector2 v1 = Vector2Scale(this->ep1.get_position(), -3 * (1 - tau) * (1 - tau));
+  Vector2 v2 = Vector2Scale(this->cp1.get_position(),  9 * tau * tau - 12 * tau + 3);
+  Vector2 v3 = Vector2Scale(this->cp2.get_position(), -9 * tau * tau + 6 * tau);
+  Vector2 v4 = Vector2Scale(this->ep2.get_position(),  3 * tau * tau);
 
   return Vector2Add(v1, Vector2Add(v2, Vector2Add(v3, v4)));
 }
@@ -68,12 +64,12 @@ Rectangle BezierCurve::tight_bounding_rect() const {
   // BC'.x(tau) = 0 OR BC'.y(tau) = 0
   // a.x*tau^2 + b.x*tau + c.x = 0 OR a.y*tau^2 + b.y*tau + c.y = 0
   
-  float ax = -3 * this->ep1.position.x + 9  * this->cp1.position.x - 9 * this->cp2.position.x + 3 * this->ep2.position.x;
-  float ay = -3 * this->ep1.position.y + 9  * this->cp1.position.y - 9 * this->cp2.position.y + 3 * this->ep2.position.y;
-  float bx =  6 * this->ep1.position.x - 12 * this->cp1.position.x + 6 * this->cp2.position.x;
-  float by =  6 * this->ep1.position.y - 12 * this->cp1.position.y + 6 * this->cp2.position.y;
-  float cx = -3 * this->ep1.position.x + 3  * this->cp1.position.x;
-  float cy = -3 * this->ep1.position.y + 3  * this->cp1.position.y;
+  float ax = -3 * this->ep1.get_position().x + 9  * this->cp1.get_position().x - 9 * this->cp2.get_position().x + 3 * this->ep2.get_position().x;
+  float ay = -3 * this->ep1.get_position().y + 9  * this->cp1.get_position().y - 9 * this->cp2.get_position().y + 3 * this->ep2.get_position().y;
+  float bx =  6 * this->ep1.get_position().x - 12 * this->cp1.get_position().x + 6 * this->cp2.get_position().x;
+  float by =  6 * this->ep1.get_position().y - 12 * this->cp1.get_position().y + 6 * this->cp2.get_position().y;
+  float cx = -3 * this->ep1.get_position().x + 3  * this->cp1.get_position().x;
+  float cy = -3 * this->ep1.get_position().y + 3  * this->cp1.get_position().y;
 
   // solving the quadratic equations
   float Dx     = bx*bx - 4*ax*cx;
@@ -84,12 +80,12 @@ Rectangle BezierCurve::tight_bounding_rect() const {
   float tau_y2 = Dy >= 0 ? (-by - sqrt(Dy))/(2 * ay) : -1.0;
 
   // selecting inner-most points
-  float left   = fminf(this->ep1.position.x, this->ep2.position.x);
-  float right  = fmaxf(this->ep1.position.x, this->ep2.position.x);;
-  float top    = fminf(this->ep1.position.y, this->ep2.position.y);
-  float bottom = fmaxf(this->ep1.position.y, this->ep2.position.y);;
+  float left   = fminf(this->ep1.get_position().x, this->ep2.get_position().x);
+  float right  = fmaxf(this->ep1.get_position().x, this->ep2.get_position().x);;
+  float top    = fminf(this->ep1.get_position().y, this->ep2.get_position().y);
+  float bottom = fmaxf(this->ep1.get_position().y, this->ep2.get_position().y);;
   if(0.0 <= tau_x1 && tau_x1 <= 1.0) {
-    Vector2 p = GetSplinePointBezierCubic(this->ep1.position, this->cp1.position, this->cp2.position, this->ep2.position, tau_x1);
+    Vector2 p = GetSplinePointBezierCubic(this->ep1.get_position(), this->cp1.get_position(), this->cp2.get_position(), this->ep2.get_position(), tau_x1);
     if(p.x < left) {
       left = p.x;
     }
@@ -98,7 +94,7 @@ Rectangle BezierCurve::tight_bounding_rect() const {
     }
   }
   if(0.0 <= tau_x2 && tau_x2 <= 1.0) {
-    Vector2 p = GetSplinePointBezierCubic(this->ep1.position, this->cp1.position, this->cp2.position, this->ep2.position, tau_x2);
+    Vector2 p = GetSplinePointBezierCubic(this->ep1.get_position(), this->cp1.get_position(), this->cp2.get_position(), this->ep2.get_position(), tau_x2);
     if(p.x < left) {
       left = p.x;
     }
@@ -107,7 +103,7 @@ Rectangle BezierCurve::tight_bounding_rect() const {
     }
   }
   if(0.0 <= tau_y1 && tau_y1 <= 1.0) {
-    Vector2 p = GetSplinePointBezierCubic(this->ep1.position, this->cp1.position, this->cp2.position, this->ep2.position, tau_y1);
+    Vector2 p = GetSplinePointBezierCubic(this->ep1.get_position(), this->cp1.get_position(), this->cp2.get_position(), this->ep2.get_position(), tau_y1);
     if(p.y < top) {
       top = p.y;
     }
@@ -116,7 +112,7 @@ Rectangle BezierCurve::tight_bounding_rect() const {
     }
   }
   if(0.0 <= tau_y2 && tau_y2 <= 1.0) {
-    Vector2 p = GetSplinePointBezierCubic(this->ep1.position, this->cp1.position, this->cp2.position, this->ep2.position, tau_y2);
+    Vector2 p = GetSplinePointBezierCubic(this->ep1.get_position(), this->cp1.get_position(), this->cp2.get_position(), this->ep2.get_position(), tau_y2);
     if(p.y < top) {
       top = p.y;
     }
@@ -134,7 +130,7 @@ bool BezierCurve::check_collision(Vector2 c, float r) {
   }
 
   for(float tau = 0.0; tau <= 1.0; tau += 0.01) {
-    Vector2 p = GetSplinePointBezierCubic(this->ep1.position, this->cp1.position, this->cp2.position, this->ep2.position, tau);
+    Vector2 p = GetSplinePointBezierCubic(this->ep1.get_position(), this->cp1.get_position(), this->cp2.get_position(), this->ep2.get_position(), tau);
     if(CheckCollisionPointCircle(p, c, r)) {
       return true;
     }
@@ -144,11 +140,18 @@ bool BezierCurve::check_collision(Vector2 c, float r) {
 }
 
 void BezierCurve::update(float dt) {
-  bool ep1_moved = this->ep1.update(dt);
-  bool cp1_moved = this->cp1.update(dt);
-  bool cp2_moved = this->cp2.update(dt);
-  bool ep2_moved = this->ep2.update(dt);
-  bool mp_moved  = this->is_in_design_mode ? this->mp.update(dt) : false;
+  static constexpr Vector2 zero{ Vector2{0, 0} };
+
+  Vector2 ep1_tr{ this->ep1.update() };
+  Vector2 cp1_tr{ this->cp1.update() };
+  Vector2 cp2_tr{ this->cp2.update() };
+  Vector2 ep2_tr{ this->ep2.update() };
+  Vector2 mp_tr { this->is_in_design_mode ? this->mp.update() : zero };
+  bool ep1_moved{ static_cast<bool>(Vector2Equals(ep1_tr, zero)) };
+  bool cp1_moved{ static_cast<bool>(Vector2Equals(cp1_tr, zero)) };
+  bool cp2_moved{ static_cast<bool>(Vector2Equals(cp2_tr, zero)) };
+  bool ep2_moved{ static_cast<bool>(Vector2Equals(ep2_tr, zero)) };
+  bool mp_moved { static_cast<bool>(Vector2Equals(mp_tr,  zero)) };
 
   if(ep1_moved || cp1_moved || cp2_moved || ep2_moved || mp_moved) {
     this->cached_tight_bounding_rect = this->tight_bounding_rect();
@@ -156,7 +159,9 @@ void BezierCurve::update(float dt) {
 
   Vector2 mouse{GetMousePosition()};
   if(this->check_collision(mouse, 3.0f)) {
-    this->mp.position = mouse;
+    if(IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+        this->mp.set_position(mouse);
+    }
     this->is_mouse_over = true;
   }
   else {
@@ -172,10 +177,10 @@ void BezierCurve::render() const {
     color = YELLOW;
   }
 
-  DrawSplineSegmentBezierCubic(this->ep1.position,
-                               this->cp1.position,
-                               this->cp2.position,
-                               this->ep2.position,
+  DrawSplineSegmentBezierCubic(this->ep1.get_position(),
+                               this->cp1.get_position(),
+                               this->cp2.get_position(),
+                               this->ep2.get_position(),
                                thickness,
                                color);
 
@@ -184,8 +189,9 @@ void BezierCurve::render() const {
     this->cp1.render();
     this->cp2.render();
     this->ep2.render();
+    this->mp.render();
 
-    DrawLineEx(this->ep1.position, this->cp1.position, 1, this->color);
-    DrawLineEx(this->ep2.position, this->cp2.position, 1, this->color);
+    DrawLineEx(this->ep1.get_position(), this->cp1.get_position(), 1, this->color);
+    DrawLineEx(this->ep2.get_position(), this->cp2.get_position(), 1, this->color);
   }
 }
