@@ -9,9 +9,9 @@ LIBS       = raylib/src/libraylib.a
 ASSETS_DIR = ./assets/
 ASSETS     = $(wildcard $(ASSETS_DIR)/*)
 SRC        = src
-OBJ        = obj
-DEP        = dependencies
 BUILD      = build
+OBJ        = build/obj
+DEP        = build/dependencies
 SRC_FILES  = $(wildcard $(SRC)/*.cpp)
 OBJ_FILES  = $(patsubst $(SRC)/%.cpp, $(OBJ)/%.o, $(SRC_FILES))
 DEP_FILES  = $(patsubst $(SRC)/%.cpp, $(DEP)/%.d, $(SRC_FILES))
@@ -19,9 +19,9 @@ DEP_FILES  = $(patsubst $(SRC)/%.cpp, $(DEP)/%.d, $(SRC_FILES))
 all: $(BUILD)/index.js $(BUILD)/index.html
 
 clean:
+	rm -rf $(BUILD)
 	rm -rf $(OBJ)
 	rm -rf $(DEP)
-	rm -rf $(BUILD)
 
 .PHONY: all clean
 
