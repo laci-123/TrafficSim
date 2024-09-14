@@ -2,78 +2,58 @@
 
 CXX        = em++
 CFLAGS     = -Wall -Wextra -std=c++20 -c
-LINKFLAGS  = -s USE_GLFW=3 -s ASYNCIFY
+DEPFLAGS   = -MM
 INCLUDE	   = -isystem ./raylib/src
+LINKFLAGS  = -s USE_GLFW=3 -s ASYNCIFY
 LIBS       = raylib/src/libraylib.a
 ASSETS_DIR = ./assets/
 ASSETS     = $(wildcard $(ASSETS_DIR)/*)
-#            cannot use a wildcard here because these files potentially do not exist yet
-OBJ_FILES  = obj/game.o \
-	     obj/toolbox.o \
-             obj/intersection.o \
-             obj/assets.o \
-             obj/road_network.o \
-             obj/main.o \
-             obj/context_menu.o \
-             obj/bezier_curve.o \
-             obj/movable_point.o \
-             obj/road_segment.o \
-             obj/dragable.o
+SRC        = src
+OBJ        = obj
+DEP        = dependencies
+BUILD      = build
+SRC_FILES  = $(wildcard $(SRC)/*.cpp)
+OBJ_FILES  = $(patsubst $(SRC)/%.cpp, $(OBJ)/%.o, $(SRC_FILES))
+DEP_FILES  = $(patsubst $(SRC)/%.cpp, $(DEP)/%.d, $(SRC_FILES))
 
-
-all: build/index.js build/index.html
+all: $(BUILD)/index.js $(BUILD)/index.html
 
 clean:
-	rm -rf obj
-	rm -rf build
+	rm -rf $(OBJ)
+	rm -rf $(DEP)
+	rm -rf $(BUILD)
 
 .PHONY: all clean
 
-build/index.js: $(OBJ_FILES) $(LIBS) $(ASSETS) | build
-	$(CXX) $(LINKFLAGS) $(OBJ_FILES) $(LIBS) --preload-file $(ASSETS_DIR) -o build/index.js
+# disable all built-in implicit rules
+.SUFFIXES:
 
-build/index.html: src/index.html | build
+$(BUILD)/index.js: $(OBJ_FILES) $(LIBS) $(ASSETS) | $(BUILD)
+	$(CXX) $(LINKFLAGS) $(OBJ_FILES) $(LIBS) --preload-file $(ASSETS_DIR) -o $(BUILD)/index.js
+
+$(BUILD)/index.html: $(SRC)/index.html | build
 	cp $< $@
 
 raylib/src/libraylib.a:
 	cd raylib/src && make PLATFORM=PLATFORM_WEB CUSTOM_CFLAGS="-DSUPPORT_FILEFORMAT_SVG"
 
-obj:
-	mkdir obj
+$(OBJ):
+	mkdir -p $(OBJ)
 
-build:
-	mkdir build
+$(BUILD):
+	mkdir -p $(BUILD)
 
-obj/main.o: src/main.cpp src/game.hpp | obj
+$(DEP):
+	mkdir -p $(DEP)
+
+$(OBJ)/%.o: $(SRC)/%.cpp $(DEP)/%.d | $(OBJ)
 	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
 
-obj/movable_point.o: src/movable_point.cpp src/dragable.hpp | obj
-	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
+# This is needed to prevent depndency files to be marked as "intermediate".
+# Intermediate files are automatically removed, which we don't want to happen.
+$(DEP_FILES):
 
-obj/bezier_curve.o: src/bezier_curve.cpp src/movable_point.hpp | obj
-	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
+$(DEP)/%.d: $(SRC)/%.cpp | $(DEP)
+	$(CXX) $(INCLUDE) $(DEPFLAGS) $< | sed 's#\(.*\)\.o:#obj/\1.o:#' > $(DEP)/$*.d
 
-obj/road_segment.o: src/road_segment.cpp src/bezier_curve.hpp src/context_menu.hpp src/road_network.hpp | obj
-	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
-
-obj/context_menu.o: src/context_menu.cpp | obj
-	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
-
-obj/road_network.o: src/road_network.cpp src/assets.hpp | obj
-	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
-
-obj/assets.o: src/assets.cpp | obj
-	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
-
-obj/intersection.o: src/intersection.cpp src/road_network.hpp src/dragable.hpp | obj
-	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
-
-obj/toolbox.o: src/toolbox.cpp | obj
-	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
-
-obj/game.o: src/game.cpp src/assets.hpp src/toolbox.hpp src/road_network.hpp src/road_segment.hpp src/intersection.hpp | obj
-	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
-
-obj/dragable.o: src/dragable.cpp | obj
-	$(CXX) $(CFLAGS) $(INCLUDE) $< -o $@
-
+include $(wildcard $(DEP)/*.d)

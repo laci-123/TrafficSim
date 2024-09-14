@@ -1,7 +1,6 @@
 #include "assets.hpp"
 #include <vector>
 
-
 std::shared_ptr<Texture2D> Assets::get_texture(const char* path, int width, int height) {
   auto key = AssetKey{.path = std::string{path}, .width = width, .height = height};
   std::shared_ptr<Texture2D> result;

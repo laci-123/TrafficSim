@@ -10,10 +10,10 @@ Toolbox::Toolbox(Vector2 position, RoadNetwork& network, std::initializer_list<E
 {
   this->calculate_width();
   for(size_t i = 0; i < this->entries.size(); ++i) {
-    this->rectangles.emplace_back(position.x,
-                                  position.y + i * RECT_HEIGHT,
-                                  this->width,
-                                  RECT_HEIGHT);
+    this->rectangles.push_back(Rectangle{position.x,
+                                         position.y + i * RECT_HEIGHT,
+                                         static_cast<float>(this->width),
+                                         RECT_HEIGHT});
   }
 }
 

@@ -6,6 +6,7 @@
 #include <string>
 #include <memory>
 
+
 struct AssetKey {
   std::string path;
   int width;
