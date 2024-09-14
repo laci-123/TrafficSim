@@ -6,7 +6,7 @@ int main(int argc, char **argv) {
   int init_window_height{ std::stoi(argv[2]) };
 
   SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT);
-  InitWindow(init_window_width, init_window_height, "Raylib WASM Example");
+  InitWindow(init_window_width, init_window_height, "Traffic Simulator");
   SetWindowState(FLAG_WINDOW_RESIZABLE);
 
   Game game;
