@@ -8,7 +8,7 @@ static constexpr int MARGIN        = 5;
 static constexpr int HEADER_HEIGHT = FONT_SIZE + PADDING + MARGIN;
 
 Toolbox::Toolbox(Vector2 position, RoadNetwork& network, std::initializer_list<Entry> entries) 
-  :position{position}, network{network}, entries{entries}
+  :Dragable{position}, network{network}, entries{entries}
 {
   this->calculate_width();
   for(size_t i = 0; i < this->entries.size(); ++i) {
@@ -17,16 +17,37 @@ Toolbox::Toolbox(Vector2 position, RoadNetwork& network, std::initializer_list<E
                                          static_cast<float>(this->width),
                                          RECT_HEIGHT});
   }
-}
-
-std::unique_ptr<RoadNetworkPart> Toolbox::update() {
   this->back_plate = Rectangle{
-    .x      = this->position.x - MARGIN,
-    .y      = this->position.y - HEADER_HEIGHT,
+    .x      = position.x - MARGIN,
+    .y      = position.y - HEADER_HEIGHT,
     .width  = static_cast<float>(this->width + 2 * MARGIN),
     .height = static_cast<float>(this->entries.size() * RECT_HEIGHT + HEADER_HEIGHT + MARGIN)
   };
+}
 
+bool Toolbox::is_mouse_over(Vector2 mouse) const {
+  return CheckCollisionPointRec(mouse, this->back_plate);
+}
+
+std::unique_ptr<RoadNetworkPart> Toolbox::update() {
+  Vector2 tr{ Dragable::update() };
+  if(!Vector2Equals(tr, Vector2{0, 0})) {
+    for(size_t i = 0; i < this->entries.size(); ++i) {
+      this->rectangles[i] = Rectangle{
+        .x      = this->get_position().x,
+        .y      = this->get_position().y + i * RECT_HEIGHT,
+        .width  = static_cast<float>(this->width),
+        .height = RECT_HEIGHT
+      };
+    }
+    this->back_plate = Rectangle{
+      .x      = this->get_position().x - MARGIN,
+      .y      = this->get_position().y - HEADER_HEIGHT,
+      .width  = static_cast<float>(this->width + 2 * MARGIN),
+      .height = static_cast<float>(this->entries.size() * RECT_HEIGHT + HEADER_HEIGHT + MARGIN)
+    };
+  }
+  
   if(IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
     if(!this->dragged_entry) {
       Vector2 mouse = GetMousePosition();

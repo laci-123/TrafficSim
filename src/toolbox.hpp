@@ -2,6 +2,7 @@
 #define TOOLBOX_INCLUDED_
 
 #include "road_network.hpp"
+#include "dragable.hpp"
 #include "raylib.h"
 #include "raymath.h"
 #include <functional>
@@ -15,14 +16,14 @@ struct Entry {
   std::function<std::unique_ptr<RoadNetworkPart>(Vector2, RoadNetwork&)> f;
 };
 
-class Toolbox {
+class Toolbox: public Dragable {
 public:
   Toolbox(Vector2 position, RoadNetwork& network, std::initializer_list<Entry> entries);
   std::unique_ptr<RoadNetworkPart> update();
   void render() const;
+  virtual bool is_mouse_over(Vector2 mouse) const override;
 private:
   void calculate_width();
-  Vector2 position;
   RoadNetwork& network;
   std::vector<Entry> entries;
   std::optional<size_t> dragged_entry;
