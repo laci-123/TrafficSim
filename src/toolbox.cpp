@@ -1,9 +1,11 @@
 #include "toolbox.hpp"
 
 
-static constexpr int FONT_SIZE   = 14;
-static constexpr int PADDING     = 4;
-static constexpr int RECT_HEIGHT = FONT_SIZE + 2 * PADDING;
+static constexpr int FONT_SIZE     = 14;
+static constexpr int PADDING       = 4;
+static constexpr int RECT_HEIGHT   = FONT_SIZE + 2 * PADDING;
+static constexpr int MARGIN        = 5;
+static constexpr int HEADER_HEIGHT = FONT_SIZE + PADDING + MARGIN;
 
 Toolbox::Toolbox(Vector2 position, RoadNetwork& network, std::initializer_list<Entry> entries) 
   :position{position}, network{network}, entries{entries}
@@ -18,6 +20,13 @@ Toolbox::Toolbox(Vector2 position, RoadNetwork& network, std::initializer_list<E
 }
 
 std::unique_ptr<RoadNetworkPart> Toolbox::update() {
+  this->back_plate = Rectangle{
+    .x      = this->position.x - MARGIN,
+    .y      = this->position.y - HEADER_HEIGHT,
+    .width  = static_cast<float>(this->width + 2 * MARGIN),
+    .height = static_cast<float>(this->entries.size() * RECT_HEIGHT + HEADER_HEIGHT + MARGIN)
+  };
+
   if(IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
     if(!this->dragged_entry) {
       Vector2 mouse = GetMousePosition();
@@ -43,6 +52,9 @@ std::unique_ptr<RoadNetworkPart> Toolbox::update() {
 }
 
 void Toolbox::render() const {
+  DrawRectangleRounded(this->back_plate, 0.2, 10, Color{.r = 0, .g = 200, .b = 0, .a = 255});
+  DrawText("Toolbox", this->back_plate.x + MARGIN, back_plate.y + MARGIN, FONT_SIZE, BLACK);
+
   for(size_t i = 0; i < this->entries.size(); ++i) {
     const Rectangle& rect = this->rectangles[i];
     DrawRectangleRec(rect, WHITE);

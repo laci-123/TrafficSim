@@ -6,7 +6,7 @@
 Game::Game()
   :network{this->assets},
    toolbox{
-     Vector2{20, 20},
+     Vector2{20, 30},
      this->network,
      {
        Entry{"road segment", [](Vector2 position, RoadNetwork& network){return std::make_unique<RoadSegment>( RoadSegment{ position, network});}},

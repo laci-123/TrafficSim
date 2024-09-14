@@ -27,6 +27,7 @@ private:
   std::vector<Entry> entries;
   std::optional<size_t> dragged_entry;
   std::vector<Rectangle> rectangles;
+  Rectangle back_plate;
   int width;
 };
 
