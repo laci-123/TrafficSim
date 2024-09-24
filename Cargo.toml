@@ -1,0 +1,51 @@
+[package]
+name = "trafficsim"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy_wasm_window_resize = "0.4.0"
+
+[dependencies.bevy]
+version = "0.14.2"
+default-features = false
+features = [
+    "bevy_winit",
+    "bevy_render",
+    "bevy_core_pipeline",
+    "bevy_asset",
+    "multi_threaded",
+    "bevy_sprite",
+    "bevy_text",
+    "bevy_ui",
+    "default_font",
+    "webgl2",
+    "png",
+]
+
+
+[profile.dev]
+# Enable a small amount of optimization in the dev profile.
+opt-level = 1
+
+[profile.dev.package."*"]
+# Enable a large amount of optimization in the dev profile for dependencies.
+opt-level = 3
+
+[profile.release]
+# Compile the entire crate as one unit.
+codegen-units = 1
+# Do a second optimization pass over the entire program, including dependencies.
+lto = "thin"
+# Abort on panic, instead of unwinding the stack
+panic = "abort"
+
+[profile.wasm-release]
+# Optimize for size in the wasm-release profile to reduce load times and bandwidth usage on web.
+inherits = "release"
+# Optimize with size in mind. 
+# Slightly slows compile times, great improvements to file size and runtime performance.
+opt-level = "z"
+# Strip all debugging information from the binary to slightly reduce file size.
+strip = "debuginfo"
+
