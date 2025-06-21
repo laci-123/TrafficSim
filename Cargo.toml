@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 eframe = "0.31.1"
+hecs = "0.10.5"
 
 
 [profile.release]
