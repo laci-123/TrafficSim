@@ -1,4 +1,4 @@
-use std::ops::{Add, AddAssign};
+use std::ops::{Add, AddAssign, Mul};
 
 
 pub type Scalar = f32;
@@ -50,6 +50,18 @@ impl<const N: usize> AddAssign for Vektor<N> {
         for i in 0..N {
             self.coordinates[i] += rhs.coordinates[i];
         }
+    }
+}
+
+impl<const N: usize> Mul<Scalar> for Vektor<N> {
+    type Output = Self;
+
+    fn mul(self, rhs: Scalar) -> Self::Output {
+        let mut result = Self::default();
+        for i in 0..N {
+            result.coordinates[i] = self.coordinates[i] * rhs;
+        }
+        result
     }
 }
 
