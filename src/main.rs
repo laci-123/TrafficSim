@@ -7,5 +7,7 @@ fn main() -> eframe::Result {
 }
 
 
+mod engine;
+mod command;
 mod game;
 mod math;

@@ -4,7 +4,7 @@ use std::ops::{Add, AddAssign, Mul};
 pub type Scalar = f32;
 
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Vektor<const N: usize> {
     pub coordinates: [Scalar; N],
 }
