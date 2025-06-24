@@ -6,7 +6,7 @@ use crate::command::*;
 
 #[derive(Default)]
 pub struct Ui {
-    
+    selected_tool: Tool,
 }
 
 impl Ui {
@@ -14,7 +14,14 @@ impl Ui {
         ctx.set_pixels_per_point(1.5);
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("Ez a cím");
+            ui.horizontal(|ui| {
+                if ui.add(egui::Button::new("car").frame(self.selected_tool == Tool::Car)).clicked() {
+                    self.selected_tool = Tool::Car;
+                }
+                if ui.add(egui::Button::new("road").frame(self.selected_tool == Tool::Road)).clicked() {
+                    self.selected_tool = Tool::Road;
+                }
+            });
             
             egui::Frame::canvas(ui.style()).show(ui, |ui| {
                 let size = ui.available_size();
@@ -22,8 +29,17 @@ impl Ui {
 
                 if response.clicked() {
                     if let Some(mouse_pos) = response.interact_pointer_pos() {
-                        let position = Vektor::from(mouse_pos);
-                        input_sender.send(InputCommand::CreateCar { position }).expect("engine thread should be running");
+                        match self.selected_tool {
+                            Tool::Car => {
+                                let position = Vektor::from(mouse_pos);
+                                send_command(input_sender, InputCommand::CreateCar { position });
+                            },
+                            Tool::Road => {
+                                let start = Vektor::from(mouse_pos);
+                                let end   = start + Vektor { coordinates: [20.0, 30.0] };
+                                send_command(input_sender, InputCommand::CreateRoadSegment { start, end });
+                            },
+                        }
                     }
                 }
 
@@ -31,4 +47,17 @@ impl Ui {
             });
         });
     }
+}
+
+
+fn send_command(input_sender: &mpsc::Sender<InputCommand>, command: InputCommand) {
+    input_sender.send(command).expect("engine thread should be running");
+}
+
+
+#[derive(Default, PartialEq, Eq)]
+enum Tool {
+    #[default]
+    Car,
+    Road,
 }

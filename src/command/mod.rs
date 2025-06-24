@@ -1,12 +1,14 @@
 use eframe::egui;
+use crate::math::*;
 
-use crate::math;
 
-
-#[derive(Debug)]
 pub enum InputCommand {
     CreateCar {
-        position: math::Vektor<2>,
+        position: Vektor<2>,
+    },
+    CreateRoadSegment {
+        start: Vektor<2>,
+        end: Vektor<2>,
     },
     Quit,
 }

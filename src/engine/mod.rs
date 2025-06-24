@@ -40,13 +40,17 @@ impl Engine {
             }
 
             for (_id, (position, velocity)) in self.world.query_mut::<(&mut Position, &Velocity)>() {
-                position.value += velocity.value.clone() * dt.as_secs_f32();
+                position.value += velocity.value * dt.as_secs_f32();
             }
 
             let mut shapes = Vec::new();
             for (_id, position) in self.world.query::<&Position>().iter() {
-                let circle = egui::Shape::circle_filled(egui::Pos2::from(position.value.clone()), 5.0, egui::Color32::GREEN);
+                let circle = egui::Shape::circle_filled(egui::Pos2::from(position.value), 5.0, egui::Color32::GREEN);
                 shapes.push(circle);
+            }
+            for (_id, (road_segment,)) in self.world.query::<(&RoadSegment,)>().iter() {
+                let line = egui::Shape::line_segment([egui::Pos2::from(road_segment.start), egui::Pos2::from(road_segment.end)], egui::Stroke::new(2.0, egui::Color32::WHITE));
+                shapes.push(line);
             }
 
             self.send_command(OutputCommand::Render { shapes });
@@ -57,6 +61,9 @@ impl Engine {
                         let velocity = Velocity{ value: Vektor::<2>{ coordinates: [10.0, 8.0] } };
                         self.world.spawn((Position{ value: position }, velocity));
                     },
+                    InputCommand::CreateRoadSegment { start, end } => {
+                        self.world.spawn((RoadSegment{ start, end },));
+                    }
                     InputCommand::Quit => {
                         self.keep_running = false;
                     }
