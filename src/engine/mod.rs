@@ -12,6 +12,7 @@ const FRAME_DURATION: f32 = 1.0 / TARGET_FPS as f32;
 
 pub struct Engine {
     world: hecs::World,
+    keep_running: bool,
     input_receiver: mpsc::Receiver<InputCommand>,
     output_sender: mpsc::Sender<OutputCommand>,
 }
@@ -20,17 +21,17 @@ impl Engine {
     pub fn new(input_receiver: mpsc::Receiver<InputCommand>, output_sender: mpsc::Sender<OutputCommand>) -> Self {
         Self {
             world: hecs::World::new(),
+            keep_running: true,
             input_receiver,
             output_sender,
         }
     }
 
     pub fn run(&mut self) {
-        let mut keep_running = true;
         let mut last_frame_started;
         let mut dt = Duration::ZERO;
 
-        while keep_running {                    
+        while self.keep_running {                    
             last_frame_started = Instant::now();
 
             let sleep_time = Duration::from_secs_f32(FRAME_DURATION).saturating_sub(dt);
@@ -44,14 +45,11 @@ impl Engine {
 
             let mut shapes = Vec::new();
             for (_id, position) in self.world.query::<&Position>().iter() {
-                let circle = egui::Shape::circle_filled(egui::Pos2::from(position.value.clone()), 5.0, egui::Color32::WHITE);
+                let circle = egui::Shape::circle_filled(egui::Pos2::from(position.value.clone()), 5.0, egui::Color32::GREEN);
                 shapes.push(circle);
             }
 
-            if self.output_sender.send(OutputCommand::Render { shapes }).is_err() {
-                eprintln!("engine thread is unable to send commands to main thread therefore engine thread quits, too");
-                keep_running = false;
-            }
+            self.send_command(OutputCommand::Render { shapes });
 
             for command in self.input_receiver.try_iter() {
                 match command {
@@ -60,12 +58,19 @@ impl Engine {
                         self.world.spawn((Position{ value: position }, velocity));
                     },
                     InputCommand::Quit => {
-                        keep_running = false;
+                        self.keep_running = false;
                     }
                 }
             }
 
             dt = Instant::now().duration_since(last_frame_started);
+        }
+    }
+
+    fn send_command(&mut self, command: OutputCommand) {
+        if self.output_sender.send(command).is_err() {
+            eprintln!("engine thread is unable to send commands to main thread therefore engine thread quits, too");
+            self.keep_running = false;
         }
     }
 }
