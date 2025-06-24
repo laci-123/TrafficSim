@@ -7,6 +7,7 @@ fn main() -> eframe::Result {
 }
 
 
+mod components;
 mod engine;
 mod command;
 mod game;
