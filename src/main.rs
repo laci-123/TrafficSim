@@ -7,6 +7,7 @@ fn main() -> eframe::Result {
 }
 
 
+mod ui;
 mod components;
 mod engine;
 mod command;
